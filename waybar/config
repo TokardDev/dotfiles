@@ -11,7 +11,7 @@
 		"hyprland/workspaces"
 	],
     "modules-center": ["clock"],
-    "modules-right": ["network", "bluetooth", "pulseaudio", "backlight", "battery", "tray", "custom/lock", "custom/power"],
+    "modules-right": ["custom/wifi-reset", "network", "bluetooth", "pulseaudio", "backlight", "battery", "tray", "custom/lock", "custom/power"],
     "wlr/workspaces": {
          "disable-scroll": true,
          "sort-by-name": true,
@@ -49,11 +49,10 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{icon} {capacity}%",
-        "format-charging": "󰂄 {capacity}%",
-        "format-plugged": "󱹬 {capacity}%",
-        "format-alt": "{icon}",
-        "format-icons": ["", "",  "", "", "", "", "", "", "", "", "", ""]
+        "format": "{capacity}%",
+        "format-charging": "⚡ {capacity}%",
+        "format-plugged": "🔌 {capacity}%",
+        "format-alt": "{capacity}%"
     },
     "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
@@ -99,5 +98,13 @@
         "format": "⛶",
         "tooltip": false,
         "on-click": "grim -g \"$(slurp)\" - | wl-copy"
+    },
+    "custom/wifi-reset": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/wifi-reset.sh",
+        "on-click": "~/.config/waybar/scripts/wifi-toggle.sh",
+        "interval": 5,
+        "tooltip": true,
+        "tooltip-format": "Click to toggle WiFi"
     }
 }
