@@ -1,0 +1,34 @@
+/*
+* Palette bleu foncé custom
+*/
+
+@define-color base   #011526;
+@define-color mantle #021a33;
+@define-color crust  #000d1a;
+
+@define-color text     #e0e0e0;
+@define-color subtext0 #bbbbbb;
+@define-color subtext1 #cccccc;
+
+@define-color surface0 #042440;
+@define-color surface1 #123C73;
+@define-color surface2 #164773;
+
+@define-color overlay0 #1d5a8f;
+@define-color overlay1 #2c6ba3;
+@define-color overlay2 #3d7cb5;
+
+@define-color blue      #5a9fd4;
+@define-color lavender  #7dbef5;
+@define-color sapphire  #4da8da;
+@define-color sky       #8be9fd;
+@define-color teal      #5cd4c8;
+@define-color green     #50fa7b;
+@define-color yellow    #f1fa8c;
+@define-color peach     #ffb86c;
+@define-color maroon    #ff6b9d;
+@define-color red       #ff5555;
+@define-color mauve     #bd93f9;
+@define-color pink      #ff79c6;
+@define-color flamingo  #ffaacc;
+@define-color rosewater #ffc4dd;
