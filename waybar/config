@@ -11,7 +11,7 @@
 		"hyprland/workspaces"
 	],
     "modules-center": ["clock"],
-    "modules-right": ["custom/wifi-reset", "network", "bluetooth", "pulseaudio", "backlight", "battery", "tray", "custom/lock", "custom/power"],
+    "modules-right": ["custom/wifi-reset", "bluetooth", "pulseaudio", "backlight", "battery", "tray", "custom/lock", "custom/power"],
     "wlr/workspaces": {
          "disable-scroll": true,
          "sort-by-name": true,
@@ -81,7 +81,7 @@
         "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}/{cidr}",
         "tooltip-format-ethernet": "{ifname}\n{ipaddr}/{cidr}",
         "tooltip-format-disconnected": "Disconnected",
-        "on-click": "nm-connection-editor",
+        "on-click": "nm-applet",
         "interval": 5
     },
     "bluetooth": {
