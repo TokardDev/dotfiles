@@ -84,7 +84,8 @@
 
 #bluetooth {
   color: @sapphire;
-  border-radius: 0;
+  border-radius: 1rem 0px 0px 1rem;
+  margin-left: 1rem;
 }
 
 #pulseaudio {
