@@ -1,78 +1,91 @@
 {
-    "layer": "top", // Waybar at top layer
-    "position": "top", // Waybar position (top|bottom|left|right)
-    // "width": 1280, // Waybar width
-    // Choose the order of the modules
-    
-	"modules-left": [
-		"custom/screenshot",
-		"group/user",
-		"custom/left_div#1",
-		"hyprland/workspaces"
-	],
-    "modules-center": ["clock"],
-    "modules-right": ["custom/wifi-reset", "bluetooth", "pulseaudio", "backlight", "battery", "tray", "custom/lock", "custom/power"],
-    "wlr/workspaces": {
-         "disable-scroll": true,
-         "sort-by-name": true,
-         "format": " {icon} ",
-         "format-icons": {
-             "default": "",
-         }
-     },
-    "tray": {
-        "icon-size": 12,
-        "spacing": 5
+    "layer": "top",
+    "position": "top",
+    "spacing": 0, // module gaps are handled in style.css via margins (for the grouped-island look)
+
+    "modules-left":   ["custom/screenshot", "hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["custom/media", "clock"],
+    "modules-right":  [
+        "group/stats",
+        "custom/wifi-reset",
+        "network",
+        "bluetooth",
+        "pulseaudio",
+        "backlight",
+        "battery",
+        "idle_inhibitor",
+        "custom/notification",
+        "tray",
+        "group/power"
+    ],
+
+    // ---------------------------------------------------------------- left
+    "custom/screenshot": {
+        "format": "󰄀",
+        "tooltip": true,
+        "tooltip-format": "Region screenshot → clipboard",
+        "on-click": "grim -g \"$(slurp)\" - | wl-copy"
     },
-    "custom/music": {
-        "format": "  {}",
-        "escape": true,
-        "interval": 5,
+    "hyprland/workspaces": {
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "format": "{id}" // show the workspace number (styled per-state in style.css)
+        // To always show e.g. workspaces 1-5 even when empty, add:
+        // "persistent-workspaces": { "*": 5 }  (note: interacts with multi-monitor)
+    },
+    "hyprland/window": {
+        "separate-outputs": true, // show the active title of each monitor's own bar
+        "max-length": 45,
         "tooltip": false,
-        "exec": "playerctl metadata --format='{{ title }}'",
+        "format": "{title}"
+    },
+
+    // -------------------------------------------------------------- center
+    "custom/media": {
+        // JSON comes from the helper script; {icon} is picked by the "alt" (play state)
+        "format": "{text}", // icon is baked into {text}; empty when stopped → module hides → clock recenters
+        "return-type": "json",
+        "max-length": 40,
+        "exec": "~/.config/waybar/scripts/mediaplayer.sh 2> /dev/null",
         "on-click": "playerctl play-pause",
-        "max-length": 50
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
     },
     "clock": {
         "timezone": "Europe/Paris",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "format": "{:%H:%M}",
-        "format-alt": "{:%d/%m}"
+        "format-alt": "{:%a %d %b}", // click to toggle to the date
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
     },
-    "backlight": {
-        "device": "intel_backlight",
-        "format": "{icon}",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
+
+    // ----------------------------------------------- right: system stats
+    "group/stats": {
+        "orientation": "horizontal",
+        "modules": ["cpu", "memory", "temperature"]
     },
-    "battery": {
-        "states": {
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}%",
-        "format-charging": "⚡ {capacity}%",
-        "format-plugged": "🔌 {capacity}%",
-        "format-alt": "{capacity}%"
+    "cpu": {
+        "interval": 2,
+        "format": "󰻠 {usage}%",
+        "on-click": "kitty -e btop"
     },
-    "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{icon} {volume}%",
-        "format-muted": "",
-        "format-icons": {
-            "default": ["", "", " "]
-        },
-        "on-click": "pavucontrol"
+    "memory": {
+        "interval": 5,
+        "format": "󰍛 {used:0.1f}G",
+        "tooltip-format": "{used:0.1f}G / {total:0.1f}G used",
+        "on-click": "kitty -e btop"
     },
-    "custom/lock": {
-        "tooltip": false,
-        "on-click": "reboot",
-        "format": "⟳"
+    "temperature": {
+        // Stable device path (resolves the hwmonN subdir itself); temp1_input = CPU package
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "input-filename": "temp1_input",
+        "critical-threshold": 85,
+        "format": "{icon} {temperatureC}°C",
+        "format-icons": ["", "", "", "", ""],
+        "on-click": "kitty -e btop"
     },
-    "custom/power": {
-        "tooltip": false,
-        "on-click": "poweroff",
-        "format": "⏻"
-    },
+
+    // -------------------------------------- right: connectivity & audio
     "network": {
         "format-wifi": "{icon}",
         "format-ethernet": "󰈀",
@@ -84,27 +97,122 @@
         "on-click": "nm-applet",
         "interval": 5
     },
+    "custom/wifi-reset": {
+        // Your YNOV script: icon only appears while connected to WiFi@YNOV
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/wifi-reset.sh",
+        "on-click": "~/.config/waybar/scripts/wifi-toggle.sh",
+        "interval": 5,
+        "tooltip": true,
+        "tooltip-format": "Click to reset WiFi@YNOV"
+    },
     "bluetooth": {
-        "format": "󰂯 {num_connections}",
-        "format-disabled": "󰂲",
+        "format": "󰂯",
         "format-off": "󰂲",
+        "format-disabled": "󰂲",
         "format-connected": "󰂯 {num_connections}",
         "tooltip-format": "{controller_alias}\t{controller_address}",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
         "on-click": "blueman-manager"
     },
-    "custom/screenshot": {
-        "format": "⛶",
-        "tooltip": false,
-        "on-click": "grim -g \"$(slurp)\" - | wl-copy"
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟",
+        "format-icons": {
+            "headphone": "󰋋",
+            "headset": "󰋎",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 2,
+        "on-click": "pavucontrol",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 2%+", // cap at 100%
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
     },
-    "custom/wifi-reset": {
-        "format": "{}",
-        "exec": "~/.config/waybar/scripts/wifi-reset.sh",
-        "on-click": "~/.config/waybar/scripts/wifi-toggle.sh",
-        "interval": 5,
-        "tooltip": true,
-        "tooltip-format": "Click to toggle WiFi"
+    "backlight": {
+        "device": "intel_backlight",
+        "format": "{icon} {percent}%",
+        "format-icons": ["󰃞", "󰃟", "󰃠"],
+        "on-scroll-up": "brightnessctl set +5%",
+        "on-scroll-down": "brightnessctl set 5%-"
+    },
+    "battery": {
+        "states": { "warning": 30, "critical": 15 },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-plugged": "󰚥 {capacity}%",
+        "format-full": "󰁹 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{capacity}% · {timeTo}\n{power}W"
+    },
+
+    // ------------------------------------------ right: toggles & tray
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated":   "󰅶", // coffee cup = staying awake
+            "deactivated": "󰛊"
+        },
+        "tooltip-format-activated": "Idle inhibitor on — screen stays awake",
+        "tooltip-format-deactivated": "Idle inhibitor off"
+    },
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification":             "󰂚",
+            "none":                     "󰂜",
+            "dnd-notification":         "󰂛",
+            "dnd-none":                 "󱏨",
+            "inhibited-notification":   "󰂚",
+            "inhibited-none":           "󰂜",
+            "dnd-inhibited-notification": "󰂛",
+            "dnd-inhibited-none":       "󱏨"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",           // streams notification state as JSON
+        "on-click": "swaync-client -t -sw",      // toggle the notification panel
+        "on-click-right": "swaync-client -d -sw", // toggle do-not-disturb
+        "escape": true
+    },
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
+    },
+
+    // ------------------------------------------ right: power drawer
+    // One power icon that expands on hover to reveal the actions — prevents
+    // accidental clicks on reboot/poweroff while keeping them one hover away.
+    "group/power": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "power-item",
+            "transition-left-to-right": false
+        },
+        // poweroff omitted: the always-visible custom/power toggle is itself the poweroff action
+        "modules": ["custom/power", "custom/lock", "custom/logout", "custom/reboot"]
+    },
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false, // always-visible toggle; hover reveals lock/logout/reboot
+        "on-click": "systemctl poweroff" // the toggle itself is the poweroff action
+    },
+    "custom/lock": {
+        "format": "󰌾",
+        "tooltip": false,
+        "on-click": "hyprlock"
+    },
+    "custom/logout": {
+        "format": "󰍃",
+        "tooltip": false,
+        "on-click": "hyprctl dispatch exit" // ends the Hyprland session (swap to "wlogout" for a menu)
+    },
+    "custom/reboot": {
+        "format": "󰜉",
+        "tooltip": false,
+        "on-click": "systemctl reboot"
     }
 }
