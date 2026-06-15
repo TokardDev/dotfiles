@@ -1,0 +1,21 @@
+/*
+ * colors.css — semantic palette consumed by style.css (@import "colors.css").
+ *
+ * This is normally regenerated from the wallpaper by Matugen, but Matugen is
+ * not installed, so this is a STATIC fallback mapping the semantic names onto
+ * the dark-blue Catppuccin-Macchiato palette in macchiato.css. If you later
+ * install + configure Matugen, it will overwrite this file.
+ */
+
+@define-color bg        #011526; /* module/bar background (used translucent via alpha) */
+@define-color fg        #e0e0e0; /* primary text */
+@define-color fg_dim    #bbbbbb; /* dimmed/inactive text */
+@define-color outline   #1d5a8f; /* subtle module borders */
+
+@define-color accent    #7dbef5; /* bright accent fill (active workspace, highlights) */
+@define-color accent2   #5a9fd4; /* secondary accent (network, memory) */
+@define-color accent3   #5cd4c8; /* tertiary accent (audio, music) */
+@define-color accent_fg #000d1a; /* dark text drawn on top of @accent */
+
+@define-color error     #ff5555; /* errors / urgent */
+@define-color warn      #ffb86c; /* warnings */

@@ -8,7 +8,9 @@
 
 /* ------------------------------------------------------------------ base */
 * {
-  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font";
+  /* JetBrainsMono Nerd Font is the intended font (install: ttf-jetbrains-mono-nerd).
+     Until then, Adwaita Mono renders text with sane metrics and Symbols Nerd Font the icons. */
+  font-family: "JetBrainsMono Nerd Font", "Adwaita Mono", "Symbols Nerd Font";
   font-size: 14px;
   min-height: 0;          /* let modules shrink to a compact bar height */
   border: none;
